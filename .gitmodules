@@ -1,0 +1,3 @@
+[submodule "nb2"]
+	path = nb2
+	url = git@github.com:Comcast/nb2.git
