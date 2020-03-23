@@ -13,11 +13,14 @@ RR_VERSION=5.3.0
 
 SANDBOX_IMG = sandbox
 SANDBOX = $(NAMESPACE)/$(SANDBOX_IMG):$(DPDK_VERSION)-$(RUST_VERSION)
+SANDBOX_LATEST = $(NAMESPACE)/$(SANDBOX_IMG):latest
+
 
 .PHONY: build-all pull-all push-all \
         build-dpdk build-devbind build-mod build-sandbox \
         pull-dpdk pull-devbind pull-mod pull-sandbox \
-        push-dpdk push-devbind push-mod push-sandbox \
+        push-dpdk push-dpdk-latest push-devbind push-debind-latest push-mod \
+        push-sandbox push-sandbox-latest \
         connect run
 
 build-dpdk:
@@ -47,6 +50,8 @@ build-all: build-dpdk build-devbind build-mod build-sandbox
 connect:
 	@docker exec -it $(SANDBOX_IMG) /bin/bash
 
+pull-all: pull pull-devbind pull-mod pull-sandbox
+
 pull-dpdk:
 	@docker pull $(NAMESPACE)/$(DPDK_IMG):$(DPDK_VERSION)
 
@@ -59,13 +64,23 @@ pull-mod:
 pull-sandbox:
 	@docker pull $(SANDBOX)
 
-pull-all: pull pull-devbind pull-mod pull-sandbox
+push-all: push-dpdk push-dpdk-latest push-devbind push-devbind-latest push-mod \
+          push-sandbox push-sandbox-latest
 
 push-dpdk:
+	@echo $(NAMESPACE)/$(DPDK_IMG):$(DPDK_VERSION)
 	@docker push $(NAMESPACE)/$(DPDK_IMG):$(DPDK_VERSION)
+
+push-dpdk-latest:
+	@docker tag $(NAMESPACE)/$(DPDK_IMG):$(DPDK_VERSION) $(NAMESPACE)/$(DPDK_IMG):latest
+	@docker push $(NAMESPACE)/$(DPDK_IMG):latest
 
 push-devbind:
 	@docker push $(NAMESPACE)/$(DPDK_DEVBIND_IMG):$(DPDK_VERSION)
+
+push-devbind-latest:
+	@docker tag $(NAMESPACE)/$(DPDK_DEVBIND_IMG):$(DPDK_VERSION) $(NAMESPACE)/$(DPDK_DEVBIND_IMG):latest
+	@docker push $(NAMESPACE)/$(DPDK_DEVBIND_IMG):latest
 
 push-mod:
 	@docker push $(NAMESPACE)/$(DPDK_MOD_IMG):$(DPDK_VERSION)-$(DPDK_MOD_KERNEL)
@@ -73,7 +88,9 @@ push-mod:
 push-sandbox:
 	@docker push $(SANDBOX)
 
-push-all: push push-devbind push-mod push-sandbox
+push-sandbox-latest:
+	@docker tag $(SANDBOX) $(SANDBOX_LATEST)
+	@docker push $(SANDBOX_LATEST)
 
 run:
 	@if [ "$$(docker images -q $(SANDBOX))" = "" ]; then \
