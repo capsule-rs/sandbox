@@ -17,9 +17,10 @@ RUN apt-get update \
     python3-pip \
     wget \
     ninja-build \
-  && pip3 install wheel \
+  && pip3 install \
     meson \
     ninja \
+    wheel \
   && wget ${DPDK_PATH}/dpdk-${DPDK_VERSION}.tar.gz -O - | tar xz -C /usr/local/src
 
 WORKDIR ${DPDK_TARGET}
@@ -27,14 +28,15 @@ WORKDIR ${DPDK_TARGET}
 RUN meson build \
   && cd build \
   && ninja \
-  && ninja install
+  && ninja install \
+  && rm -rf ${DPDK_TARGET}/build
 
 ##
 ## dpdk
 ##
 FROM debian:buster-slim as dpdk
 
-LABEL maintainer="williamofockham <occam_engineering@comcast.com>"
+LABEL maintainer="Capsule Developers <capsule-dev@googlegroups.com>"
 
 COPY --from=builder /usr/local/lib/x86_64-linux-gnu /usr/local/lib/x86_64-linux-gnu
 
@@ -43,6 +45,7 @@ RUN apt-get update \
   && apt-get install -y \
     libnuma-dev \
     libpcap-dev \
+  && ldconfig \
   && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 ##
@@ -50,7 +53,7 @@ RUN apt-get update \
 ##
 FROM debian:buster-slim as dpdk-devbind
 
-LABEL maintainer="williamofockham <occam_engineering@comcast.com>"
+LABEL maintainer="Capsule Developers <capsule-dev@googlegroups.com>"
 
 COPY --from=builder /usr/local/bin/dpdk-devbind.py /usr/local/bin/dpdk-devbind.py
 
@@ -67,7 +70,7 @@ RUN apt-get update \
 ##
 FROM debian:buster-slim as dpdk-mod
 
-LABEL maintainer="williamofockham <occam_engineering@comcast.com>"
+LABEL maintainer="Capsule Developers <capsule-dev@googlegroups.com>"
 
 COPY --from=builder /lib/modules /lib/modules
 
@@ -82,7 +85,7 @@ RUN apt-get update \
 ##
 FROM $RUST_BASE_IMG as sandbox
 
-LABEL maintainer="williamofockham <occam_engineering@comcast.com>"
+LABEL maintainer="Capsule Developers <capsule-dev@googlegroups.com>"
 
 ARG DPDK_VERSION
 ARG DPDK_TARGET=/usr/local/src/dpdk-stable-${DPDK_VERSION}
@@ -102,7 +105,6 @@ RUN apt-get update \
     build-essential \
     ca-certificates \
     clang \
-    cpufrequtils \
     kmod \
     gdb \
     git \
@@ -121,6 +123,7 @@ RUN apt-get update \
     python-setuptools \
     tcpdump \
     wget \
+  && ldconfig \
   && rustup component add \
     clippy \
     rust-docs \
@@ -130,4 +133,4 @@ RUN apt-get update \
   && cargo install cargo-expand \
   && wget -P /tmp https://github.com/mozilla/rr/releases/download/${RR_VERSION}/rr-${RR_VERSION}-Linux-$(uname -m).deb \
   && dpkg -i /tmp/rr-${RR_VERSION}-Linux-$(uname -m).deb \
-  && rm -rf ${DPDK_TARGET}/build .cargo/registry /var/lib/apt/lists /var/cache/apt/archives /tmp/*
+  && rm -rf .cargo/registry /var/lib/apt/lists /var/cache/apt/archives /tmp/*

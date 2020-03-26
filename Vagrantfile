@@ -16,7 +16,6 @@ $sandbox_img = "capsule/sandbox:18.11.6-1.42"
 
 $dpdk_driver = "uio_pci_generic"
 $dpdk_devices = "0000:00:08.0"
-$capsule_repo = "git@github.com:Comcast/nb2.git"
 $vhome = "/home/vagrant"
 
 # All Vagrant configuration is done here. The most common configuration
@@ -38,7 +37,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Forward user-defined ports.
   ENV['FORWARDED_PORTS'].to_s.split(" ").each do |port|
     config.vm.network :forwarded_port, guest: port, host: port
-    end
+  end
 
   # Pull and run our image(s) in order to do the devbind and insmod for kni.
   config.vm.define "docker", primary: true do |docker|
@@ -61,7 +60,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       override.vm.synced_folder ".", "/vagrant", create: true, type: "virtualbox"
     end
 
-    docker.vm.provision "shell", path: "scripts/docker-vm.sh", :args => [$dpdk_driver, $vhome]
+    docker.vm.provision "shell", path: "scripts/docker-vagrant.sh", :args => [$dpdk_driver, $vhome]
     docker.vm.provision "docker" do |d|
     ## TODO: Uncomment runs for manual builds or whole block once contains on hub.docker.com
     #   d.pull_images "#{$devbind_img}"
@@ -115,6 +114,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Install for root user, as DPDK apps require sudo, e.g. `cargo run`.
     v.vm.provision "shell", path: "scripts/rustup.sh"
     # Setup specific to this vm.
-    v.vm.provision "shell", path: "scripts/vm.sh", :args => [$dpdk_driver, $dpdk_devices, $vhome]
+    v.vm.provision "shell", path: "scripts/vm-vagrant.sh", :args => [$dpdk_driver, $dpdk_devices, $vhome]
   end
 end

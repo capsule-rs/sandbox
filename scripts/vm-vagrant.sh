@@ -17,8 +17,8 @@ grep -qxF "source $HOME/.cargo/env" $HOME/.bashrc || \
     echo "source $HOME/.cargo/env" >> $HOME/.bashrc
 
 # Start at "/vagrant/capsule" upon ssh.
-grep -qxF "cd /vagrant/nb2" ${VAGRANT_HOME_DIR}/.bashrc || \
-    echo "cd /vagrant/nb2" >> ${VAGRANT_HOME_DIR}/.bashrc
+grep -qxF "cd /vagrant/capsule" ${VAGRANT_HOME_DIR}/.bashrc || \
+    echo "cd /vagrant/capsule" >> ${VAGRANT_HOME_DIR}/.bashrc
 
 # Turn CARGO_INCREMENTAL off for vagrant/sudo users.
 grep -qxF "export CARGO_INCREMENTAL=0" $HOME/.bashrc || \
@@ -36,9 +36,6 @@ cargo install cargo-expand && cp $HOME/.cargo/bin/cargo-expand ${VAGRANT_HOME_DI
 dpdk-devbind.py --force -b ${DPDK_DRIVER} ${DPDK_DEVICES}
 
 # insmod kni
-if lsmod | grep rte_kni &> /dev/null ; then
-	echo "rte_knii loaded"
-else
+if ! lsmod | grep rte_kni &> /dev/null ; then
     insmod /lib/modules/`uname -r`/extra/dpdk/rte_kni.ko
 fi
-

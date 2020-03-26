@@ -19,7 +19,8 @@ sudo apt-get update \
     python3-setuptools \
     python3-pip \
     wget \
-  && sudo pip3 install --system wheel \
+  && sudo pip3 install --system \
     meson \
     ninja \
+    wheel \
   && sudo rm -rf /var/lib/apt/lists /var/cache/apt/archives
