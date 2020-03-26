@@ -15,7 +15,7 @@ $dpdkmod_img = "capsule/dpdk-mod:18.11.6-`uname -r`"
 $sandbox_img = "capsule/sandbox:18.11.6-1.42"
 
 $dpdk_driver = "uio_pci_generic"
-$dpdk_devices = "0000:00:08.0"
+$dpdk_devices = "0000:00:08.0 0000:00:09.0"
 $vhome = "/home/vagrant"
 
 # All Vagrant configuration is done here. The most common configuration
@@ -31,13 +31,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.forward_agent = true
   config.ssh.forward_x11 = true
 
-  # Specific IP. This is needed because DPDK takes over the NIC.
+  # Specific IPs. These is needed because DPDK takes over the NIC.
   config.vm.network "private_network", ip: "10.100.1.10"
-
-  # Forward user-defined ports.
-  ENV['FORWARDED_PORTS'].to_s.split(" ").each do |port|
-    config.vm.network :forwarded_port, guest: port, host: port
-  end
+  config.vm.network "private_network", ip: "10.100.1.11"
 
   # Pull and run our image(s) in order to do the devbind and insmod for kni.
   config.vm.define "docker", primary: true do |docker|
