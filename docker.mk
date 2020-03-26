@@ -1,14 +1,17 @@
 BASE_DIR = $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+BUILDER_BASE_IMG = debian:buster-slim
 DOCKER_NAMESPACE = getcapsule
+
 DPDK_IMG = dpdk
 DPDK_DEVBIND_IMG = dpdk-devbind
 DPDK_MOD_IMG = dpdk-mod
 DPDK_MOD_KERNEL = $(shell uname -r)
+DPDK_TARGET = /usr/local/src/dpdk-$(DPDK_VERSION)
 DPDK_VERSION = 18.11.6
-DPDK_TARGET=/usr/local/src/dpdk-$(DPDK_VERSION)
+
+RR_VERSION = 5.3.0
+RUST_BASE_IMG = rust:$(RUST_VERSION)-slim-buster
 RUST_VERSION = 1.42
-RUST_BASE_IMG=rust:$(RUST_VERSION)-slim-buster
-RR_VERSION=5.3.0
 
 SANDBOX_IMG = sandbox
 SANDBOX = $(DOCKER_NAMESPACE)/$(SANDBOX_IMG):$(DPDK_VERSION)-$(RUST_VERSION)
@@ -23,21 +26,25 @@ SANDBOX_LATEST = $(DOCKER_NAMESPACE)/$(SANDBOX_IMG):latest
 
 build-dpdk:
 	@docker build --target $(DPDK_IMG) \
+		--build-arg BUILDER_BASE_IMG=$(BUILDER_BASE_IMG) \
 		--build-arg DPDK_VERSION=$(DPDK_VERSION) \
 		-t $(DOCKER_NAMESPACE)/$(DPDK_IMG):$(DPDK_VERSION) $(BASE_DIR)
 
 build-devbind:
 	@docker build --target $(DPDK_DEVBIND_IMG) \
+		--build-arg BUILDER_BASE_IMG=$(BUILDER_BASE_IMG) \
 		--build-arg DPDK_VERSION=$(DPDK_VERSION) \
 		-t $(DOCKER_NAMESPACE)/$(DPDK_DEVBIND_IMG):$(DPDK_VERSION) $(BASE_DIR)
 
 build-mod:
 	@docker build --target $(DPDK_MOD_IMG) \
+		--build-arg BUILDER_BASE_IMG=$(BUILDER_BASE_IMG) \
 		--build-arg DPDK_VERSION=$(DPDK_VERSION) \
 		-t $(DOCKER_NAMESPACE)/$(DPDK_MOD_IMG):$(DPDK_VERSION)-$(DPDK_MOD_KERNEL) $(BASE_DIR)
 
 build-sandbox:
 	@docker build --target $(SANDBOX_IMG) \
+		--build-arg BUILDER_BASE_IMG=$(BUILDER_BASE_IMG) \
 		--build-arg DPDK_VERSION=$(DPDK_VERSION) \
 		--build-arg RUST_BASE_IMG=$(RUST_BASE_IMG) \
 		--build-arg RR_VERSION=$(RR_VERSION) \
@@ -107,7 +114,7 @@ test:
 	docker pull $(SANDBOX); \
 	fi
 	@docker run --rm --privileged --network=host --name $(SANDBOX_IMG) \
-	-w /home/$(NAMESPACE) \
+	-w /home/capsule \
 	-v /lib/modules:/lib/modules \
 	-v /dev/hugepages:/dev/hugepages \
 	-v $(BASE_DIR)/capsule:/home/capsule \

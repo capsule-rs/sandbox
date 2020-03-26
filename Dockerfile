@@ -1,6 +1,7 @@
+ARG BUILDER_BASE_IMG
 ARG RUST_BASE_IMG
 
-FROM debian:buster-slim as builder
+FROM $BUILDER_BASE_IMG as builder
 
 ARG DPDK_VERSION
 ARG DPDK_PATH=http://fast.dpdk.org/rel
@@ -43,8 +44,8 @@ COPY --from=builder /usr/local/lib/x86_64-linux-gnu /usr/local/lib/x86_64-linux-
 RUN apt-get update \
   && apt-get upgrade -y \
   && apt-get install -y \
-    libnuma-dev \
-    libpcap-dev \
+    libnuma1 \
+    libpcap0.8 \
   && ldconfig \
   && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
@@ -105,7 +106,7 @@ RUN apt-get update \
     build-essential \
     ca-certificates \
     clang \
-    kmod \
+    curl \
     gdb \
     git \
     gnuplot \
