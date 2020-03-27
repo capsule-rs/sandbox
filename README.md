@@ -1,3 +1,17 @@
+[![Apache-2.0 licensed][apache-badge]][apache-url]
+[![CI-Github Actions][gh-actions-badge]][gh-actions-url]
+[![Code of Conduct][code-of-conduct-badge]][code-of-conduct-url]
+[![Discord channel][discord-badge]][discord-url]
+
+[apache-badge]: https://img.shields.io/github/license/capsule-rs/sandbox
+[apache-url]: LICENSE
+[gh-actions-badge]: https://github.com/capsule-rs/sandbox/workflows/build/badge.svg
+[gh-actions-url]: https://github.com/capsule-rs/sandbox/actions
+[code-of-conduct-badge]: https://img.shields.io/badge/%E2%9D%A4-code%20of%20conduct-ff69b4
+[code-of-conduct-url]: CODE_OF_CONDUCT.md
+[discord-badge]: https://img.shields.io/discord/690406128567320597.svg?logo=discord
+[discord-url]: https://discord.gg/qZ9G99y
+
 # Capsule sandbox
 
 The Capsule sandbox is a containerized development environment for building [Capsule](https://github.com/capsule-rs/capsule) applications in Rust.
