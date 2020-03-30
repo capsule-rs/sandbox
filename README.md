@@ -30,7 +30,7 @@ The quickest way to start the sandbox is to use the Vagrant virtual machine incl
 After cloning this repository, you can start the vagrant VM using commands,
 
 ```
-host$ vagrant up docker
+host$ vagrant up
 host$ vagrant ssh
 ```
 
