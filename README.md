@@ -9,7 +9,7 @@ The Capsule sandbox is a containerized development environment for building Caps
   * [Vagrant and VirtualBox](#vagrant-and-virtualbox)
   * [Linux Distributions](#linux-distributions)
   * [Without Docker](#without-docker)
-  * [Kernel Network Interface](#kernel-network-interface)
+  * [Kernel NIC Interface](#kernel-nic-interface)
 * [Packaging for Release](#packaging-for-release)
 * [Contributing](#contributing)
 * [Code of Conduct](#code-of-conduct)
@@ -34,7 +34,7 @@ host$ vagrant up docker
 host$ vagrant ssh
 ```
 
-Now you are inside a Debian VM. The system is already preconfigured for DPDK. To run the sandbox, use the command,
+Now you are inside a `Debian` VM. The system is already preconfigured for DPDK. To run the sandbox, use the command,
 
 ```
 vagrant$ docker run -it --rm \
@@ -63,11 +63,11 @@ To use `Capsule`, add it as a dependency in your `Cargo.toml`,
 capsule = "0.1"
 ```
 
-You should also mount the working directory of your project as a volume for the sandbox. Then you can use`cargo` inside the container as normal.
+You should also mount the working directory of your project as a volume for the sandbox. Then you can use `cargo` commands inside the container as normal.
 
 ### Linux Distributions
 
-Alternatively, if you are already running a Linux operating system and do not wish to use `Vagrant`, you should be able to run the sandbox container directly. We've tested the sandbox on Debian Buster, Ubuntu Bionic and CentOS 7. Other Linux distributions and versions may work similarly with minor tweaks, if you are not running the versions we tested on.
+Alternatively, if you are already running a Linux operating system and do not wish to use `Vagrant`, you should be able to run the sandbox container directly. We've tested the sandbox on `Debian Buster`, `Ubuntu Bionic` and `CentOS 7`. Other Linux distributions and versions may work similarly with minor tweaks, if you are not running the versions we tested on.
 
 You need to make a few configuration changes to support `DPDK`.
 
@@ -111,9 +111,27 @@ host$ docker run ...
 
 ### Without Docker
 
-### Kernel Network Interface
+If you choose not to use `Docker`, or if you are using a Linux distribution incompatible with the `Debian` based sandbox, then you need to [install DPDK from source](https://doc.dpdk.org/guides/linux_gsg/build_dpdk.html) yourself.
+
+In additional to the [required tools and libraries](https://doc.dpdk.org/guides/linux_gsg/sys_reqs.html#compilation-of-the-dpdk), you also need the library for packet captures to run some `Capsule` example applications. Install `libpcap-dev` for `Debian`/`Ubuntu` and `libpcap-devel` for `RHEL`/`CentOS`/`Fedora`.
+
+Once you installed all the necessary tools and libraries on your system, you should use our [script](scripts/dpdk.sh) to install the version of DPDK that `Capsule` uses.
+
+### Kernel NIC Interface
+
+If your application uses [KNI](https://doc.dpdk.org/guides/prog_guide/kernel_nic_interface.html), you will need the kernel module `rte_kni`. Kernel modules are version specific. We may provide precompiled modules for different kernel versions and Linux distributions in the future. But for now, you will have to compile it yourself by installing the kernel headers or sources required to build kernel modules on your system, and then build `DPDK` from source. Follow the directions above.
+
+Once compiled, you can load it using command,
+
+```
+host$ sudo insmod /lib/modules/`uname -r`/extra/dpdk/rte_kni.ko
+```
 
 ## Packaging for Release
+
+When packaging your application for release, the package must include the shared `DPDK` libraries and have as dependencies `libnuma` and `libpcap` for your Linux distribution.
+
+If you want to containerize your release, you can use `getcapsule/dpdk:18.11.6` as the base image which includes `libnuma`, `libpcap` and `DPDK`. For other packaging methods, you can find the `DPDK` libraries in `/usr/local/lib/x86_64-linux-gnu`.
 
 ## Contributing
 
