@@ -1,6 +1,7 @@
+ARG BUILDER_BASE_IMG
 ARG RUST_BASE_IMG
 
-FROM debian:buster-slim as builder
+FROM $BUILDER_BASE_IMG as builder
 
 ARG DPDK_VERSION
 ARG DPDK_PATH=http://fast.dpdk.org/rel
@@ -105,7 +106,7 @@ RUN apt-get update \
     build-essential \
     ca-certificates \
     clang \
-    kmod \
+    curl \
     gdb \
     git \
     gnuplot \

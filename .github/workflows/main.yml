@@ -1,0 +1,187 @@
+name: build
+
+on:
+  push:
+    paths:
+      - 'docker.mk'
+      - 'Dockerfile'
+      - 'scripts/**'
+    branches:
+      - master
+  pull_request:
+    paths:
+      - 'docker.mk'
+      - 'Dockerfile'
+      - 'scripts/**'
+    branches:
+      - master
+
+jobs:
+  dpdk:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: build
+        run: make -e BUILDER_BASE_IMG=ubuntu:bionic -f docker.mk build-dpdk
+
+      - name: publish
+        if: github.event_name == 'push'
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: |
+          echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+          make -f docker.mk push-dpdk
+          make -f docker.mk push-dpdk-latest
+
+      - name: slack-it
+        uses: homoluctus/slatify@v2.1.2
+        if: failure() || cancelled()
+        with:
+          type: ${{ job.status }}
+          job_name: '*${{ github.workflow }}* @ dpdk'
+          url: ${{ secrets.SLACK_WEBHOOK }}
+          commit: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  dpdk-devbind:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: build
+        run: make -e BUILDER_BASE_IMG=ubuntu:bionic -f docker.mk build-devbind
+
+      - name: publish
+        if: github.event_name == 'push'
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: |
+          echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+          make -f docker.mk push-devbind
+          make -f docker.mk push-debind-latest
+
+      - name: slack-it
+        uses: homoluctus/slatify@v2.1.2
+        if: failure() || cancelled()
+        with:
+          type: ${{ job.status }}
+          job_name: '*${{ github.workflow }}* @ dpdk-devbind'
+          url: ${{ secrets.SLACK_WEBHOOK }}
+          commit: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  dpdk-install:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: run-setup
+        shell: bash
+        run: |
+          # removes due to https://github.com/Microsoft/azure-pipelines-image-generation/issues/672#issuecomment-548954382
+          sudo apt-get remove -y clang-6.0 libclang-common-6.0-dev libclang1-6.0 libllvm6.0
+          ./scripts/setup.sh
+
+      - name: install-dpdk
+        shell: bash
+        run: ./scripts/dpdk.sh
+
+      - name: check-install
+        run: dpdk-devbind.py --status
+
+      - name: slack-it
+        uses: homoluctus/slatify@v2.1.2
+        if: failure() || cancelled()
+        with:
+          type: ${{ job.status }}
+          job_name: '*${{ github.workflow }}* @ dpdk-install'
+          url: ${{ secrets.SLACK_WEBHOOK }}
+          commit: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+
+  # TODO: build-out matrix of kernel versions when we build them out-of-tree
+  dpdk-mod:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: build
+        run: make -e BUILDER_BASE_IMG=ubuntu:bionic -f docker.mk build-mod
+
+      - name: slack-it
+        uses: homoluctus/slatify@v2.1.2
+        if: failure() || cancelled()
+        with:
+          type: ${{ job.status }}
+          job_name: '*${{ github.workflow }}* @ dpdk-mod'
+          url: ${{ secrets.SLACK_WEBHOOK }}
+          commit: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  sandbox:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GitHub_PAT }}
+          submodules: true
+
+      - name: build
+        run: make -e BUILDER_BASE_IMG=ubuntu:bionic -f docker.mk build-sandbox
+
+      - name: test
+        run: make -f docker.mk test
+
+      - name: publish
+        if: github.event_name == 'push'
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: |
+          echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+          make -f docker.mk push-sandbox
+          make -f docker.mk push-sandbox-latest
+
+      - name: slack-it
+        uses: homoluctus/slatify@v2.1.2
+        if: failure() || cancelled()
+        with:
+          type: ${{ job.status }}
+          job_name: '*${{ github.workflow }}* @ sandbox'
+          url: ${{ secrets.SLACK_WEBHOOK }}
+          commit: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  slack:
+    needs: [dpdk, dpdk-devbind, dpdk-install, dpdk-mod, sandbox]
+    runs-on: ubuntu-18.04
+    steps:
+      - name: slack-it
+        uses: homoluctus/slatify@v2.1.2
+        if: always()
+        with:
+          type: ${{ job.status }}
+          job_name: '*${{ github.workflow }}*'
+          url: ${{ secrets.SLACK_WEBHOOK }}
+          commit: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  discord:
+    needs: [dpdk, dpdk-devbind, dpdk-install, dpdk-mod, sandbox]
+    runs-on: ubuntu-18.04
+    steps:
+      - name: discord-it
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          description: '*${{ github.workflow }} Succeeded!* ~ ${{ github.HEAD_REF }} by ${{ github.ACTOR }} ~ https://github.com/capsule-rs/sandbox/actions'
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
