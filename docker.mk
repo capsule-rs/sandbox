@@ -22,7 +22,7 @@ SANDBOX_LATEST = $(DOCKER_NAMESPACE)/$(SANDBOX_IMG):latest
         pull-dpdk pull-devbind pull-mod pull-sandbox \
         push-dpdk push-dpdk-latest push-devbind push-debind-latest push-mod \
         push-sandbox push-sandbox-latest \
-        connect run test
+        connect-sandbox run-sandbox test-sandbox
 
 build-dpdk:
 	@docker build --target $(DPDK_IMG) \
@@ -52,7 +52,7 @@ build-sandbox:
 
 build-all: build-dpdk build-devbind build-mod build-sandbox
 
-connect:
+connect-sandbox:
 	@docker exec -it $(SANDBOX_IMG) /bin/bash
 
 pull-all: pull-dpdk pull-devbind pull-mod pull-sandbox
@@ -97,7 +97,7 @@ push-sandbox-latest:
 	@docker tag $(SANDBOX) $(SANDBOX_LATEST)
 	@docker push $(SANDBOX_LATEST)
 
-run:
+run-sandbox:
 	@if [ "$$(docker images -q $(SANDBOX))" = "" ]; then \
 	docker pull $(SANDBOX); \
 	fi
@@ -109,7 +109,7 @@ run:
 	-v $(BASE_DIR)/capsule:/home/capsule \
 	$(SANDBOX) /bin/bash
 
-test:
+test-sandbox:
 	@if [ "$$(docker images -q $(SANDBOX))" = "" ]; then \
 	docker pull $(SANDBOX); \
 	fi

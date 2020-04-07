@@ -1,3 +1,4 @@
 [submodule "capsule"]
 	path = capsule
 	url = git@github.com:capsule-rs/capsule.git
+	branch = master

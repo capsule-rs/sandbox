@@ -138,8 +138,8 @@ jobs:
       - name: build
         run: make -e BUILDER_BASE_IMG=ubuntu:bionic -f docker.mk build-sandbox
 
-      - name: test
-        run: make -f docker.mk test
+      - name: test-capsule-in-sandbox
+        run: make -f docker.mk test-sandbox
 
       - name: publish
         if: github.event_name == 'push'
