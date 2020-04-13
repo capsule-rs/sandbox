@@ -4,6 +4,7 @@ ARG RUST_BASE_IMG
 FROM $BUILDER_BASE_IMG as builder
 
 ARG DPDK_VERSION
+ARG DEBUG=false
 ARG DPDK_PATH=http://fast.dpdk.org/rel
 ARG DPDK_TARGET=/usr/local/src/dpdk-stable-${DPDK_VERSION}
 
@@ -28,6 +29,7 @@ WORKDIR ${DPDK_TARGET}
 
 RUN meson build \
   && cd build \
+  && if [ "$DEBUG" = "true" ]; then meson configure -Dbuildtype=debug; fi \
   && ninja \
   && ninja install \
   && rm -rf ${DPDK_TARGET}/build
