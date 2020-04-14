@@ -45,9 +45,10 @@ build-mod:
 build-sandbox:
 	@docker build --target $(SANDBOX_IMG) \
 		--build-arg BUILDER_BASE_IMG=$(BUILDER_BASE_IMG) \
+		--build-arg DEBUG=true \
 		--build-arg DPDK_VERSION=$(DPDK_VERSION) \
-		--build-arg RUST_BASE_IMG=$(RUST_BASE_IMG) \
 		--build-arg RR_VERSION=$(RR_VERSION) \
+		--build-arg RUST_BASE_IMG=$(RUST_BASE_IMG) \
 		-t $(SANDBOX) $(BASE_DIR)
 
 build-all: build-dpdk build-devbind build-mod build-sandbox
