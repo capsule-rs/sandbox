@@ -66,7 +66,7 @@ vagrant$ docker run -it --rm \
     --security-opt seccomp=unconfined \
     -v /lib/modules:/lib/modules \
     -v /dev/hugepages:/dev/hugepages \
-    getcapsule/sandbox:18.11.6-1.42 /bin/bash
+    getcapsule/sandbox:18.11.7-1.42 /bin/bash
 ```
 
 The sandbox must run in privileged mode with host networking, so it can access the two network interfaces on the Vagrant host dedicated to DPDK applications.
@@ -116,17 +116,17 @@ host$ exit
 Before your `Capsule` application can access a network interface on the host, the interface must be bound to a DPDK compatible driver with the [`dpdk-devbind`](https://doc.dpdk.org/guides/tools/devbind.html) utility. To bind the driver, find the interface's PCI address and use the command,
 
 ```
-host$ docker pull getcapsule/dpdk-devbind:18.11.6
+host$ docker pull getcapsule/dpdk-devbind:18.11.7
 host$ docker run --rm --privileged --network=host \
     -v /lib/modules:/lib/modules \
-    getcapsule/dpdk-devbind:18.11.6 \
+    getcapsule/dpdk-devbind:18.11.7 \
     /bin/bash -c 'dpdk-devbind.py --force -b uio_pci_generic #PCI_ADDR#'
 ```
 
 Once the necessary changes are made, pull down the sandbox container and run it,
 
 ```
-host$ docker pull getcapsule/sandbox:18.11.6-1.42
+host$ docker pull getcapsule/sandbox:18.11.7-1.42
 host$ docker run ...
 ```
 
@@ -161,7 +161,7 @@ host$ sudo insmod /lib/modules/`uname -r`/extra/dpdk/rte_kni.ko
 
 When packaging your application for release, the package must include the shared `DPDK` libraries and have as dependencies `libnuma` and `libpcap` for your Linux distribution.
 
-If you want to containerize your release, you can use [`getcapsule/dpdk:18.11.6`](https://hub.docker.com/repository/docker/getcapsule/dpdk) as the base image which includes `libnuma`, `libpcap` and `DPDK`. For other packaging methods, you can find the `DPDK` libraries in `/usr/local/lib/x86_64-linux-gnu`.
+If you want to containerize your release, you can use [`getcapsule/dpdk:18.11.7`](https://hub.docker.com/repository/docker/getcapsule/dpdk) as the base image which includes `libnuma`, `libpcap` and `DPDK`. For other packaging methods, you can find the `DPDK` libraries in `/usr/local/lib/x86_64-linux-gnu`.
 
 ## Contributing
 

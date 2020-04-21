@@ -7,7 +7,7 @@ DPDK_DEVBIND_IMG = dpdk-devbind
 DPDK_MOD_IMG = dpdk-mod
 DPDK_MOD_KERNEL = $(shell uname -r)
 DPDK_TARGET = /usr/local/src/dpdk-$(DPDK_VERSION)
-DPDK_VERSION = 18.11.6
+DPDK_VERSION = 18.11.7
 
 RR_VERSION = 5.3.0
 RUST_BASE_IMG = rust:$(RUST_VERSION)-slim-buster

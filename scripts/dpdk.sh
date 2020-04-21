@@ -18,7 +18,7 @@
 #
 
 ## Version we recommend.
-DPDK_VERSION=${1:-18.11.6}
+DPDK_VERSION=${1:-18.11.7}
 DPDK_PATH=${2:-http://fast.dpdk.org/rel}
 DPDK_TARGET=/usr/local/src/dpdk-stable-${DPDK_VERSION}
 

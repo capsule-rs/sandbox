@@ -33,6 +33,7 @@ sudo apt-get update \
     linux-headers-$(uname -r) \
     llvm-dev \
     pkg-config \
+    python-pyelftools \
     python3-setuptools \
     python3-pip \
     wget \
