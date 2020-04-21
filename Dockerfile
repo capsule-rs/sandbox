@@ -123,6 +123,7 @@ RUN apt-get update \
     pkg-config \
     python \
     python-pip \
+    python-pyelftools \
     python-setuptools \
     tcpdump \
     wget \
