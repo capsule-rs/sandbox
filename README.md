@@ -32,7 +32,7 @@ The Capsule sandbox is a containerized development environment for building [Cap
 
 ## Introduction
 
-`Capsule` is built on Intel's [Data Plane Development Kit](https://www.dpdk.org/) release [18.11](https://doc.dpdk.org/guides-18.11/rel_notes/release_18_11.html). While it is written in Rust, it needs to be able to call `DPDK`'s C functions installed separately as shared dynamic libaries. To make developing and running Capsule applications easy, we created a sandbox container with all the necessary dependencies. You can pull down the container and start writing network functions in stable `Rust` right away.
+`Capsule` is built on Intel's [Data Plane Development Kit](https://www.dpdk.org/) release [19.11](https://doc.dpdk.org/guides-19.11/rel_notes/release_19_11.html). While it is written in Rust, it needs to be able to call `DPDK`'s C functions installed separately as shared dynamic libaries. To make developing and running Capsule applications easy, we created a sandbox container with all the necessary dependencies. You can pull down the container and start writing network functions in stable `Rust` right away.
 
 ## Getting Started
 
@@ -66,7 +66,7 @@ vagrant$ docker run -it --rm \
     --security-opt seccomp=unconfined \
     -v /lib/modules:/lib/modules \
     -v /dev/hugepages:/dev/hugepages \
-    getcapsule/sandbox:18.11.7-1.42 /bin/bash
+    getcapsule/sandbox:19.11.1-1.43 /bin/bash
 ```
 
 The sandbox must run in privileged mode with host networking, so it can access the two network interfaces on the Vagrant host dedicated to DPDK applications.
@@ -116,17 +116,17 @@ host$ exit
 Before your `Capsule` application can access a network interface on the host, the interface must be bound to a DPDK compatible driver with the [`dpdk-devbind`](https://doc.dpdk.org/guides/tools/devbind.html) utility. To bind the driver, find the interface's PCI address and use the command,
 
 ```
-host$ docker pull getcapsule/dpdk-devbind:18.11.7
+host$ docker pull getcapsule/dpdk-devbind:19.11.1
 host$ docker run --rm --privileged --network=host \
     -v /lib/modules:/lib/modules \
-    getcapsule/dpdk-devbind:18.11.7 \
+    getcapsule/dpdk-devbind:19.11.1 \
     /bin/bash -c 'dpdk-devbind.py --force -b uio_pci_generic #PCI_ADDR#'
 ```
 
 Once the necessary changes are made, pull down the sandbox container and run it,
 
 ```
-host$ docker pull getcapsule/sandbox:18.11.7-1.42
+host$ docker pull getcapsule/sandbox:19.11.1-1.43
 host$ docker run ...
 ```
 
@@ -138,7 +138,14 @@ In addition to the [required tools and libraries](https://doc.dpdk.org/guides/li
 
 Once you've installed all the necessary tools and libraries, use our [script](scripts/dpdk.sh) to install the version of DPDK that `Capsule` uses.
 
-You can also use another [script](scripts/rustup.sh) to install the latest stable `Rust` if that's not setup already. Since kernel 4.0, running `DPDK` applications requires `root` privileges. You must install the `Rust` toolchain for the `root` user as well if you want to run your project with `cargo run`.
+You can also use another [script](scripts/rustup.sh) to install the latest stable `Rust` if it's not setup already. Since kernel 4.0, running `DPDK` applications requires `root` privileges. You must install the `Rust` toolchain for the `root` user as well if you want to run your project with `cargo run`. Just for reference, when running Capsule examples without `root` privileges, you will see an error akin to
+
+```shell
+EAL: FATAL: Cannot use IOVA as 'PA' since physical addresses are not available
+EAL: Cannot use IOVA as 'PA' since physical addresses are not available
+DEBUG capsule::dpdk: EAL parsed -1 arguments.
+Error: DpdkError("Invalid argument")
+```
 
 We've also provided another VirtualBox VM for development, sans `Docker`, if you don't want to manually install `DPDK`, `Rust`, and the necessary tools and libraries.
 
@@ -161,7 +168,7 @@ host$ sudo insmod /lib/modules/`uname -r`/extra/dpdk/rte_kni.ko
 
 When packaging your application for release, the package must include the shared `DPDK` libraries and have as dependencies `libnuma` and `libpcap` for your Linux distribution.
 
-If you want to containerize your release, you can use [`getcapsule/dpdk:18.11.7`](https://hub.docker.com/repository/docker/getcapsule/dpdk) as the base image which includes `libnuma`, `libpcap` and `DPDK`. For other packaging methods, you can find the `DPDK` libraries in `/usr/local/lib/x86_64-linux-gnu`.
+If you want to containerize your release, you can use [`getcapsule/dpdk:19.11.1`](https://hub.docker.com/repository/docker/getcapsule/dpdk) as the base image which includes `libnuma`, `libpcap` and `DPDK`. For other packaging methods, you can find the `DPDK` libraries in `/usr/local/lib/x86_64-linux-gnu`.
 
 ## Contributing
 
