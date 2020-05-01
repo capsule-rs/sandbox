@@ -70,7 +70,7 @@ pull-mod:
 pull-sandbox:
 	@docker pull $(SANDBOX)
 
-push-all: push-dpdk push-dpdk-latest push-devbind push-devbind-latest push-mod
+push-all: push-dpdk push-dpdk-latest push-devbind push-devbind-latest push-mod \
           push-sandbox push-sandbox-latest
 
 push-dpdk:
