@@ -74,7 +74,6 @@ push-all: push-dpdk push-dpdk-latest push-devbind push-devbind-latest push-mod \
           push-sandbox push-sandbox-latest
 
 push-dpdk:
-	@echo $(DOCKER_NAMESPACE)/$(DPDK_IMG):$(DPDK_VERSION)
 	@docker push $(DOCKER_NAMESPACE)/$(DPDK_IMG):$(DPDK_VERSION)
 
 push-dpdk-latest:
