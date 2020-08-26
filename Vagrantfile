@@ -57,7 +57,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # VirtualBox-specific default configuration
     docker.vm.provider "virtualbox" do |vb, override|
       # Set machine name, memory and CPU limits
-      vb.name = "debian:buster-capsule-docker"
+      vb.name = "debian-buster-capsule-docker"
       vb.memory = 8192
       vb.cpus = 4
       vb.default_nic_type = "virtio"
@@ -102,7 +102,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # VirtualBox-specific default configuration
     v.vm.provider "virtualbox" do |vb, override|
       # Set machine name, memory and CPU limits
-      vb.name = "debian:buster-capsule-vm"
+      vb.name = "debian-buster-capsule-vm"
       vb.memory = 8192
       vb.cpus = 4
       vb.default_nic_type = "virtio"
