@@ -27,9 +27,9 @@ VAGRANTFILE_API_VERSION = "2"
 end
 
 # Default Vagrant vars.
-$devbind_img = "getcapsule/dpdk-devbind:19.11.1"
-$dpdkmod_img = "getcapsule/dpdk-mod:19.11.1-`uname -r`"
-$sandbox_img = "getcapsule/sandbox:19.11.1-1.43"
+$devbind_img = "getcapsule/dpdk-devbind:19.11.6"
+$dpdkmod_img = "getcapsule/dpdk-mod:19.11.6-`uname -r`"
+$sandbox_img = "getcapsule/sandbox:19.11.6-1.50"
 
 $dpdk_driver = "uio_pci_generic"
 $dpdk_devices = "0000:00:08.0 0000:00:09.0"
@@ -40,7 +40,7 @@ $vhome = "/home/vagrant"
 # please see the online documentation at https://docs.vagrantup.com.
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.allowed_synced_folder_types = [:virtualbox, :vmware, :sshfs]
-  config.vm.box = "debian/buster64"
+  config.vm.box = "debian/contrib-buster64"
   config.vm.box_check_update = false
   config.vm.post_up_message = "hello Capsule!"
 
