@@ -7,11 +7,11 @@ DPDK_DEVBIND_IMG = dpdk-devbind
 DPDK_MOD_IMG = dpdk-mod
 DPDK_MOD_KERNEL = $(shell uname -r)
 DPDK_TARGET = /usr/local/src/dpdk-$(DPDK_VERSION)
-DPDK_VERSION = 19.11.1
+DPDK_VERSION = 19.11.6
 
 RR_VERSION = 5.3.0
 RUST_BASE_IMG = rust:$(RUST_VERSION)-slim-buster
-RUST_VERSION = 1.47
+RUST_VERSION = 1.49
 
 SANDBOX_IMG = sandbox
 SANDBOX = $(DOCKER_NAMESPACE)/$(SANDBOX_IMG):$(DPDK_VERSION)-$(RUST_VERSION)
@@ -111,7 +111,7 @@ run-sandbox:
 
 test-sandbox:
 	@if [ "$$(docker images -q $(SANDBOX))" = "" ]; then \
-	docker pull $(SANDBOX); \
+	docker pull $(SANDBOX_IMG); \
 	fi
 	@docker run --rm --privileged --network=host --name $(SANDBOX_IMG) \
 	-w /home/capsule \

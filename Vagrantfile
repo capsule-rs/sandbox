@@ -27,9 +27,9 @@ VAGRANTFILE_API_VERSION = "2"
 end
 
 # Default Vagrant vars.
-$devbind_img = "getcapsule/dpdk-devbind:19.11.1"
-$dpdkmod_img = "getcapsule/dpdk-mod:19.11.1-`uname -r`"
-$sandbox_img = "getcapsule/sandbox:19.11.1-1.43"
+$devbind_img = "getcapsule/dpdk-devbind:19.11.6"
+$dpdkmod_img = "getcapsule/dpdk-mod:19.11.6-`uname -r`"
+$sandbox_img = "getcapsule/sandbox:19.11.6-1.49"
 
 $dpdk_driver = "uio_pci_generic"
 $dpdk_devices = "0000:00:08.0 0000:00:09.0"
