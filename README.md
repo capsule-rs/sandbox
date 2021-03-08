@@ -18,17 +18,19 @@ The Capsule sandbox is a containerized development environment for building [Cap
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Getting Started](#getting-started)
-  - [Vagrant and Docker](#vagrant-and-docker)
-  - [Linux Distributions](#linux-distributions)
-  - [Without Docker](#without-docker)
-  - [Kernel NIC Interface](#kernel-nic-interface)
-- [Packaging for Release](#packaging-for-release)
-- [Contributing](#contributing)
-- [Code of Conduct](#code-of-conduct)
-- [Contact](#contact)
-- [License](#license)
+- [Capsule sandbox](#capsule-sandbox)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Getting Started](#getting-started)
+    - [Vagrant and Docker](#vagrant-and-docker)
+    - [Linux Distributions Running Docker Directly](#linux-distributions-running-docker-directly)
+    - [Without Docker](#without-docker)
+    - [Kernel NIC Interface](#kernel-nic-interface)
+  - [Packaging for Release](#packaging-for-release)
+  - [Contributing](#contributing)
+  - [Code of Conduct](#code-of-conduct)
+  - [Contact](#contact)
+  - [License](#license)
 
 ## Introduction
 
@@ -55,7 +57,18 @@ host$ vagrant up
 host$ vagrant ssh
 ```
 
-Once inside a `Debian` VM with `Docker` installed. The VM is already preconfigured for DPDK. To run the sandbox, use the command,
+This VM has three additional private network interfaces defined on the same subnet. Two of the interfaces are bound to DPDK and are not visible to the Linux kernel. Use the third interface to send and receive packets to and from the DPDK bound interfaces with any networking tools.
+
+```
+# Specific IPs. These is needed because DPDK takes over the NIC.
+config.vm.network "private_network", ip: "10.100.1.10"
+config.vm.network "private_network", ip: "10.100.1.11"
+
+# NIC on the same subnet as the two dedicated to DPDK.
+config.vm.network "private_network", ip: "10.100.1.255", :mac => "020000FFFFFF"
+```
+
+Once inside the `Debian` VM with `Docker` installed. The VM is already preconfigured for DPDK. To run the sandbox, use the command,
 
 ```
 vagrant$ docker run -it --rm \
@@ -69,7 +82,7 @@ vagrant$ docker run -it --rm \
     getcapsule/sandbox:19.11.6-1.50 /bin/bash
 ```
 
-The sandbox must run in privileged mode with host networking, so it can access the two network interfaces on the Vagrant host dedicated to DPDK applications.
+The sandbox must run in privileged mode with host networking, so it can access the two network interfaces on the Vagrant host bound to DPDK applications.
 
 ```
 vagrant$ lspci

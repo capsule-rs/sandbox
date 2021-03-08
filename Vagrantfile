@@ -52,6 +52,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "private_network", ip: "10.100.1.10"
   config.vm.network "private_network", ip: "10.100.1.11"
 
+  # NIC on the same subnet as the two bound to DPDK.
+  config.vm.network "private_network", ip: "10.100.1.255", :mac => "020000FFFFFF"
+
   # Pull and run our image(s) in order to do the devbind and insmod for kni.
   config.vm.define "docker", primary: true do |docker|
     # VirtualBox-specific default configuration
@@ -65,9 +68,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Configure VirtualBox to enable passthrough of SSE 4.1 and SSE 4.2 instructions,
       vb.customize ["setextradata", :id, "VBoxInternal/CPUM/SSE4.1", "1"]
       vb.customize ["setextradata", :id, "VBoxInternal/CPUM/SSE4.2", "1"]
-
-      # Allow promiscuous mode for host-only adapter
-      vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
 
       # Sync folder via VirtualBox type.
       override.vm.synced_folder ".", "/vagrant", create: true, type: "virtualbox"
@@ -110,9 +110,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Configure VirtualBox to enable passthrough of SSE 4.1 and SSE 4.2 instructions,
       vb.customize ["setextradata", :id, "VBoxInternal/CPUM/SSE4.1", "1"]
       vb.customize ["setextradata", :id, "VBoxInternal/CPUM/SSE4.2", "1"]
-
-      # Allow promiscuous mode for host-only adapter
-      vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
 
       # Sync folder via VirtualBox type.
       override.vm.synced_folder ".", "/vagrant", create: true, type: "virtualbox"
