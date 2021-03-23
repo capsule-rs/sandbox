@@ -10,7 +10,7 @@
 [code-of-conduct-badge]: https://img.shields.io/badge/%E2%9D%A4-code%20of%20conduct-ff69b4
 [code-of-conduct-url]: CODE_OF_CONDUCT.md
 [discord-badge]: https://img.shields.io/discord/690406128567320597.svg?logo=discord
-[discord-url]: https://discord.gg/qZ9G99y
+[discord-url]: https://discord.gg/sAgzNV27sA
 
 # Capsule sandbox
 
@@ -193,7 +193,7 @@ This project and everyone participating in it are governed by the [Capsule Code 
 
 ## Contact
 
-You can contact us through either [`Discord`](https://discord.gg/sVN47RU) or [email](mailto:capsule-dev@googlegroups.com).
+You can contact us through either [`Discord`](https://discord.gg/sAgzNV27sA) or [email](mailto:capsule-dev@googlegroups.com).
 
 ## License
 
