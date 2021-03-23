@@ -1,0 +1,35 @@
+pkgname=dpdk-lts
+pkgver=19.11.6
+pkgrel=1
+pkgdesc='A set of libraries and drivers for fast packet processing'
+arch=(x86_64 i686)
+url='http://dpdk.org'
+license=(BSD)
+options=(staticlibs)
+depends=(numactl)
+makedepends=(linux-headers libpcap)
+checkdepends=()
+source=(
+    "http://fast.dpdk.org/rel/dpdk-$pkgver.tar.xz"
+)
+sha256sums=(
+    '97ee27bb98f5e38bdaa3762345817a56f821b016bb2f518cf0aade4fdffde9f4'
+)
+
+prepare() {
+  cd dpdk-stable-$pkgver
+  meson build
+}
+
+build() {
+  cd dpdk-stable-$pkgver/build
+  ninja
+}
+
+package() {
+  cd dpdk-stable-$pkgver/build
+  DESTDIR="$pkgdir" ninja install
+  mv "$pkgdir"/usr/local/* "$pkgdir"/usr/
+  mv "$pkgdir"/lib/* "$pkgdir"/usr/lib/
+  rm -rf "$pkgdir"/lib/ "$pkgdir"/usr/local
+}

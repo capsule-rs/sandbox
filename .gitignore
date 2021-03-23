@@ -1,3 +1,6 @@
 .vagrant
 *.log
 *.tgz
+scripts/dpdk-lts/*
+!scripts/dpdk-lts/PKGBUILD
+
