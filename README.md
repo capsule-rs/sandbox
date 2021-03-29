@@ -61,11 +61,11 @@ This VM has three additional private network interfaces defined on the same subn
 
 ```
 # Specific IPs. These is needed because DPDK takes over the NIC.
-config.vm.network "private_network", ip: "10.100.1.10"
-config.vm.network "private_network", ip: "10.100.1.11"
+config.vm.network "private_network", ip: "10.100.1.10", :mac => "020000FFFF00"
+config.vm.network "private_network", ip: "10.100.1.11", :mac => "020000FFFF01"
 
 # NIC on the same subnet as the two dedicated to DPDK.
-config.vm.network "private_network", ip: "10.100.1.255", :mac => "020000FFFFFF"
+config.vm.network "private_network", ip: "10.100.1.254", :mac => "020000FFFFFF"
 ```
 
 Once inside the `Debian` VM with `Docker` installed. The VM is already preconfigured for DPDK. To run the sandbox, use the command,

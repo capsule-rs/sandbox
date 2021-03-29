@@ -49,11 +49,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.forward_x11 = true
 
   # Specific IPs. These is needed because DPDK takes over the NIC.
-  config.vm.network "private_network", ip: "10.100.1.10"
-  config.vm.network "private_network", ip: "10.100.1.11"
+  config.vm.network "private_network", ip: "10.100.1.10", :mac => "020000FFFF00"
+  config.vm.network "private_network", ip: "10.100.1.11", :mac => "020000FFFF01"
 
   # NIC on the same subnet as the two bound to DPDK.
-  config.vm.network "private_network", ip: "10.100.1.255", :mac => "020000FFFFFF"
+  config.vm.network "private_network", ip: "10.100.1.254", :mac => "020000FFFFFF"
 
   # Pull and run our image(s) in order to do the devbind and insmod for kni.
   config.vm.define "docker", primary: true do |docker|
@@ -94,7 +94,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                      --network=host).join(" "),
             restart: "no",
             daemonize: true,
-            cmd: "insmod /lib/modules/`uname -r`/extra/dpdk/rte_kni.ko"
+            cmd: "insmod /lib/modules/`uname -r`/extra/dpdk/rte_kni.ko carrier=on"
     end
   end
 
