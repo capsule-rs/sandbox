@@ -89,7 +89,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.GitHub_PAT }}
           submodules: true
 
       - name: build
